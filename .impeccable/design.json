@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-31T10:58:35.7760709+08:00",
+  "title": "Design System: ComfyUI-Autocomplete-Aaalice",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "工作台蓝",
+        "canonical": "#5b8cff",
+        "tonalRamp": ["oklch(15% 0.10 260)", "oklch(25% 0.12 260)", "oklch(35% 0.14 260)", "oklch(45% 0.15 260)", "oklch(58% 0.16 260)", "oklch(70% 0.13 260)", "oklch(82% 0.08 260)", "oklch(95% 0.03 260)"]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "工作台蓝悬浮态",
+        "canonical": "#75a0ff",
+        "tonalRamp": ["oklch(15% 0.09 260)", "oklch(25% 0.11 260)", "oklch(35% 0.13 260)", "oklch(47% 0.14 260)", "oklch(62% 0.15 260)", "oklch(73% 0.12 260)", "oklch(84% 0.07 260)", "oklch(95% 0.025 260)"]
+      },
+      "surface-popup": {
+        "role": "neutral",
+        "displayName": "宿主输入表面",
+        "canonical": "var(--comfy-input-bg)",
+        "tonalRamp": ["color-mix(in srgb, var(--comfy-input-bg) 42%, black)", "color-mix(in srgb, var(--comfy-input-bg) 58%, black)", "color-mix(in srgb, var(--comfy-input-bg) 74%, black)", "var(--comfy-input-bg)", "color-mix(in srgb, var(--comfy-input-bg) 88%, white)", "color-mix(in srgb, var(--comfy-input-bg) 72%, white)", "color-mix(in srgb, var(--comfy-input-bg) 46%, white)", "color-mix(in srgb, var(--comfy-input-bg) 16%, white)"]
+      },
+      "surface-dialog": {
+        "role": "neutral",
+        "displayName": "深墨台面",
+        "canonical": "#171717",
+        "tonalRamp": ["#0b0b0b", "#171717", "#242424", "#363636", "#505050", "#747474", "#ababab", "#f0f0f0"]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "石墨浮层",
+        "canonical": "#1e1e1e",
+        "tonalRamp": ["#0d0d0d", "#1e1e1e", "#2b2b2b", "#3c3c3c", "#565656", "#797979", "#aeaeae", "#f2f2f2"]
+      },
+      "text-primary": {
+        "role": "neutral",
+        "displayName": "宿主正文",
+        "canonical": "var(--input-text)",
+        "tonalRamp": ["color-mix(in srgb, var(--input-text) 24%, black)", "color-mix(in srgb, var(--input-text) 38%, black)", "color-mix(in srgb, var(--input-text) 54%, black)", "color-mix(in srgb, var(--input-text) 72%, black)", "var(--input-text)", "color-mix(in srgb, var(--input-text) 78%, white)", "color-mix(in srgb, var(--input-text) 48%, white)", "color-mix(in srgb, var(--input-text) 16%, white)"]
+      },
+      "text-high": {
+        "role": "neutral",
+        "displayName": "高亮正文",
+        "canonical": "rgb(255 255 255 / 94%)",
+        "tonalRamp": ["rgb(255 255 255 / 15%)", "rgb(255 255 255 / 27%)", "rgb(255 255 255 / 39%)", "rgb(255 255 255 / 52%)", "rgb(255 255 255 / 66%)", "rgb(255 255 255 / 78%)", "rgb(255 255 255 / 88%)", "rgb(255 255 255 / 94%)"]
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "柔和说明文字",
+        "canonical": "rgb(255 255 255 / 56%)",
+        "tonalRamp": ["rgb(255 255 255 / 10%)", "rgb(255 255 255 / 17%)", "rgb(255 255 255 / 24%)", "rgb(255 255 255 / 32%)", "rgb(255 255 255 / 40%)", "rgb(255 255 255 / 48%)", "rgb(255 255 255 / 56%)", "rgb(255 255 255 / 72%)"]
+      },
+      "border-soft": {
+        "role": "neutral",
+        "displayName": "呼吸分隔",
+        "canonical": "rgb(255 255 255 / 9%)",
+        "tonalRamp": ["rgb(255 255 255 / 2%)", "rgb(255 255 255 / 4%)", "rgb(255 255 255 / 6%)", "rgb(255 255 255 / 9%)", "rgb(255 255 255 / 12%)", "rgb(255 255 255 / 16%)", "rgb(255 255 255 / 22%)", "rgb(255 255 255 / 32%)"]
+      },
+      "success": {
+        "role": "secondary",
+        "displayName": "状态绿",
+        "canonical": "#4ade80",
+        "tonalRamp": ["oklch(15% 0.08 145)", "oklch(25% 0.10 145)", "oklch(35% 0.12 145)", "oklch(47% 0.14 145)", "oklch(60% 0.16 145)", "oklch(72% 0.13 145)", "oklch(84% 0.08 145)", "oklch(95% 0.03 145)"]
+      },
+      "warning": {
+        "role": "secondary",
+        "displayName": "状态黄",
+        "canonical": "#facc15",
+        "tonalRamp": ["oklch(15% 0.08 95)", "oklch(25% 0.10 95)", "oklch(35% 0.12 95)", "oklch(48% 0.14 95)", "oklch(62% 0.16 95)", "oklch(74% 0.13 95)", "oklch(85% 0.08 95)", "oklch(95% 0.03 95)"]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "状态红",
+        "canonical": "#f87171",
+        "tonalRamp": ["oklch(15% 0.08 25)", "oklch(25% 0.10 25)", "oklch(35% 0.12 25)", "oklch(47% 0.14 25)", "oklch(60% 0.16 25)", "oklch(72% 0.13 25)", "oklch(84% 0.08 25)", "oklch(95% 0.03 25)"]
+      }
+    },
+    "typographyMeta": {
+      "title": { "displayName": "Dialog Title", "purpose": "在线设置 Dialog 的主标题。" },
+      "body": { "displayName": "Compact Body", "purpose": "设置说明、字段值与操作文案。" },
+      "label": { "displayName": "Interface Label", "purpose": "按钮、字段标签、状态和分区标题。" },
+      "mono": { "displayName": "Tag Mono", "purpose": "查询、别名和机器可读值。" }
+    },
+    "shadows": [
+      { "name": "popup-ambient", "value": "inset 0 1px rgb(255 255 255 / 5%), 0 8px 28px rgb(0 0 0 / 42%)", "purpose": "补全与共现弹层从复杂画布中分离。" },
+      { "name": "dialog-ambient", "value": "inset 0 1px rgb(255 255 255 / 5%), 0 0 28px rgb(0 0 0 / 32%), 0 32px 96px rgb(0 0 0 / 72%)", "purpose": "在线设置模态 Dialog。" },
+      { "name": "surface-raised", "value": "inset 0 1px rgb(255 255 255 / 4%), 0 6px 18px rgb(0 0 0 / 14%)", "purpose": "状态网格与轻度抬升卡片。" },
+      { "name": "field-rest", "value": "inset 0 1px rgb(255 255 255 / 5%), 0 3px 10px rgb(0 0 0 / 12%)", "purpose": "输入框默认层级。" },
+      { "name": "field-focus", "value": "inset 0 1px rgb(255 255 255 / 6%), 0 0 0 2px rgb(91 140 255 / 48%), 0 6px 18px rgb(0 0 0 / 18%)", "purpose": "输入框编辑焦点。" }
+    ],
+    "motion": [
+      { "name": "state-fast", "value": "120ms ease", "purpose": "按钮、图标与基础 hover/focus 状态。" },
+      { "name": "switch", "value": "140ms ease", "purpose": "Switch 轨道与滑块切换。" },
+      { "name": "navigation", "value": "160ms ease", "purpose": "在线设置导航状态切换。" },
+      { "name": "progress", "value": "180ms ease", "purpose": "确定型进度条宽度变化。" }
+    ],
+    "breakpoints": [
+      { "name": "popup-compact", "value": "34rem" },
+      { "name": "popup-narrow", "value": "23rem" },
+      { "name": "online-mobile", "value": "620px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Autocomplete Popup",
+      "kind": "custom",
+      "refersTo": "popup",
+      "description": "主题自适应的紧凑补全弹层容器。",
+      "html": "<section class=\"ds-popup\"><header class=\"ds-popup-header\"><strong>Autocomplete</strong><code>masterp</code><span>24</span><button aria-label=\"Close\">×</button></header><div class=\"ds-popup-body\">Candidate list</div></section>",
+      "css": ".ds-popup{display:flex;width:min(42rem,calc(100vw - 24px));overflow:hidden;flex-direction:column;border-radius:8px;background:var(--comfy-input-bg);box-shadow:inset 0 1px rgb(255 255 255 / 5%),0 8px 28px rgb(0 0 0 / 42%);color:var(--input-text)}.ds-popup-header{display:flex;min-height:34px;align-items:center;padding:6px 8px 6px 10px;border-bottom:1px solid color-mix(in srgb,var(--border-color) 55%,transparent);gap:8px}.ds-popup-header code{overflow:hidden;padding:2px 6px;border-radius:4px;background:color-mix(in srgb,var(--comfy-input-bg) 82%,var(--input-text));text-overflow:ellipsis}.ds-popup-header span{margin-left:auto;color:color-mix(in srgb,var(--input-text) 72%,transparent);font-size:11px}.ds-popup-header button{width:24px;height:24px;padding:0;border:0;border-radius:4px;background:transparent;color:var(--input-text)}.ds-popup-header button:hover{background:color-mix(in srgb,var(--input-text) 10%,transparent)}.ds-popup-header button:focus-visible{outline:2px solid color-mix(in srgb,var(--p-blue-500) 72%,transparent);outline-offset:1px}.ds-popup-body{min-height:96px;padding:12px;color:var(--descrip-text)}"
+    },
+    {
+      "name": "Candidate Row",
+      "kind": "custom",
+      "description": "固定 32px 节奏、清晰列对齐的候选行。",
+      "html": "<div class=\"ds-candidate\" tabindex=\"0\"><span>masterpiece</span><span>杰作</span><span class=\"ds-count\">9.9m</span><span class=\"ds-origin\">CSV</span></div>",
+      "css": ".ds-candidate{display:grid;box-sizing:border-box;min-height:32px;align-items:center;padding:0 8px;border-bottom:1px solid var(--border-color);background:var(--comfy-input-bg);color:var(--input-text);cursor:pointer;grid-template-columns:minmax(8rem,1fr) minmax(6rem,.8fr) 4rem 2.5rem;gap:8px}.ds-candidate:hover{background:var(--comfy-hover-bg)}.ds-candidate:focus-visible{outline:2px solid color-mix(in srgb,var(--p-blue-500) 72%,transparent);outline-offset:-2px}.ds-candidate.ds-selected{background:color-mix(in srgb,var(--p-blue-500) 32%,var(--comfy-input-bg));box-shadow:inset 3px 0 0 var(--p-blue-400)}.ds-count{text-align:right}.ds-origin{justify-self:end}"
+    },
+    {
+      "name": "Origin Badge",
+      "kind": "chip",
+      "refersTo": "origin-badge",
+      "description": "CSV、LM、API、ZH 等来源的低调语义徽章。",
+      "html": "<span class=\"ds-origin-badge\" role=\"img\" aria-label=\"CSV source\">CSV</span>",
+      "css": ".ds-origin-badge{display:inline-flex;height:12px;align-items:center;padding:0 3px;border:1px solid color-mix(in srgb,currentcolor 38%,transparent);border-radius:3px;background:color-mix(in srgb,currentcolor 8%,transparent);color:var(--input-text);font:650 8px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.04em;opacity:.72;transition:background-color 120ms ease,border-color 120ms ease,opacity 120ms ease}.ds-origin-badge:hover{border-color:color-mix(in srgb,currentcolor 58%,transparent);background:color-mix(in srgb,currentcolor 14%,transparent);opacity:1}"
+    },
+    {
+      "name": "Online Navigation Tab",
+      "kind": "nav",
+      "description": "在线设置侧栏的整行导航 Tab。",
+      "html": "<button class=\"ds-nav-tab is-active\" role=\"tab\" aria-selected=\"true\"><svg aria-hidden=\"true\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.12 2.12-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20h-3v-.08a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-2.12-2.12.06-.06A1.7 1.7 0 0 0 7 15a1.7 1.7 0 0 0-1.56-1.03H5v-3h.44A1.7 1.7 0 0 0 7 9.94a1.7 1.7 0 0 0-.34-1.88L6.6 8l2.12-2.12.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 11.69 5V4h3v1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.12 2.12-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.56 1.03H21v3h-.04A1.7 1.7 0 0 0 19.4 15Z\"/></svg><span>Online Services</span></button>",
+      "css": ".ds-nav-tab{display:flex;width:190px;min-height:42px;align-items:center;padding:0 11px;border:0;border-radius:9px;background:transparent;color:rgb(255 255 255 / 56%);cursor:pointer;font:400 .78rem/1.4 Inter,ui-sans-serif,system-ui,sans-serif;gap:10px;text-align:left;transition:background-color 160ms ease,box-shadow 160ms ease,color 160ms ease}.ds-nav-tab:hover{background:rgb(255 255 255 / 6%);color:white}.ds-nav-tab.is-active{background:rgb(91 140 255 / 13%);box-shadow:inset 3px 0 #5b8cff,inset 0 1px rgb(255 255 255 / 5%);color:white}.ds-nav-tab:focus-visible{outline:2px solid rgb(91 140 255 / 72%);outline-offset:-2px}"
+    },
+    {
+      "name": "Online Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "无边框、轻抬升并带清晰焦点环的设置字段。",
+      "html": "<label class=\"ds-field\"><span>API Key</span><input type=\"password\" value=\"••••••••\" /></label>",
+      "css": ".ds-field{display:flex;min-width:240px;flex-direction:column;color:rgb(255 255 255 / 65%);font:400 .73rem/1.4 Inter,ui-sans-serif,system-ui,sans-serif;gap:6px}.ds-field input{box-sizing:border-box;width:100%;min-height:38px;padding:9px 11px;border:0;border-radius:8px;background:#1e1e1e;box-shadow:inset 0 1px rgb(255 255 255 / 5%),0 3px 10px rgb(0 0 0 / 12%);color:var(--input-text,#f3f3f3);font:inherit;font-size:.78rem;outline:none;transition:box-shadow 120ms ease}.ds-field input:focus{box-shadow:inset 0 1px rgb(255 255 255 / 6%),0 0 0 2px rgb(91 140 255 / 48%),0 6px 18px rgb(0 0 0 / 18%)}.ds-field input:disabled{cursor:not-allowed;opacity:.58}"
+    },
+    {
+      "name": "Online Switch",
+      "kind": "input",
+      "description": "用于在线能力开关的紧凑 pill Switch。",
+      "html": "<label class=\"ds-toggle\"><span><strong>Danbooru</strong><small>Supplement local results</small></span><input class=\"ds-switch\" type=\"checkbox\" role=\"switch\" checked /></label>",
+      "css": ".ds-toggle{display:flex;min-width:260px;align-items:center;justify-content:space-between;padding:13px 14px;border-radius:10px;background:#1e1e1e;box-shadow:inset 0 1px rgb(255 255 255 / 4%),0 5px 16px rgb(0 0 0 / 14%);color:rgb(255 255 255 / 88%);cursor:pointer;font:400 .78rem/1.4 Inter,ui-sans-serif,system-ui,sans-serif;gap:16px}.ds-toggle:hover{background:rgb(255 255 255 / 5%);box-shadow:inset 0 1px rgb(255 255 255 / 6%),0 7px 20px rgb(0 0 0 / 20%)}.ds-toggle span{display:flex;flex-direction:column;gap:4px}.ds-toggle small{color:rgb(255 255 255 / 56%)}.ds-switch{position:relative;width:38px;height:22px;flex:0 0 auto;border:1px solid rgb(255 255 255 / 14%);border-radius:999px;appearance:none;background:#333;cursor:pointer;transition:border-color 140ms ease,background-color 140ms ease}.ds-switch::before{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#bbb;content:'';transition:background-color 140ms ease,transform 140ms ease}.ds-switch:checked{border-color:#5b8cff;background:#5b8cff}.ds-switch:checked::before{background:white;transform:translateX(16px)}.ds-switch:focus-visible{outline:2px solid #5b8cff;outline-offset:3px}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "取消、刷新和普通辅助操作的默认按钮。",
+      "html": "<button class=\"ds-button-quiet\" type=\"button\">Refresh</button>",
+      "css": ".ds-button-quiet{display:inline-flex;min-height:34px;align-items:center;justify-content:center;padding:0 12px;border:0;border-radius:8px;background:rgb(255 255 255 / 5%);box-shadow:inset 0 1px rgb(255 255 255 / 5%),0 3px 10px rgb(0 0 0 / 14%);color:rgb(255 255 255 / 78%);cursor:pointer;font:550 .75rem/1 Inter,ui-sans-serif,system-ui,sans-serif;transition:background-color 120ms ease,color 120ms ease}.ds-button-quiet:hover:not(:disabled){background:rgb(255 255 255 / 8%);color:white}.ds-button-quiet:focus-visible{outline:2px solid #5b8cff;outline-offset:2px}.ds-button-quiet:active:not(:disabled){background:rgb(255 255 255 / 6%)}.ds-button-quiet:disabled{cursor:not-allowed;opacity:.58}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "保存等明确主要操作使用的工作台蓝按钮。",
+      "html": "<button class=\"ds-button-primary\" type=\"button\">Save</button>",
+      "css": ".ds-button-primary{display:inline-flex;min-width:96px;min-height:34px;align-items:center;justify-content:center;padding:0 12px;border:0;border-radius:8px;background:#5b8cff;box-shadow:inset 0 1px rgb(255 255 255 / 18%),0 6px 18px rgb(45 92 196 / 32%);color:white;cursor:pointer;font:550 .75rem/1 Inter,ui-sans-serif,system-ui,sans-serif;transition:background-color 120ms ease,color 120ms ease}.ds-button-primary:hover:not(:disabled){background:#75a0ff;box-shadow:inset 0 1px rgb(255 255 255 / 22%),0 8px 22px rgb(45 92 196 / 38%)}.ds-button-primary:focus-visible{outline:2px solid #5b8cff;outline-offset:2px}.ds-button-primary:active:not(:disabled){transform:translateY(0)}.ds-button-primary:disabled{cursor:not-allowed;opacity:.58}"
+    },
+    {
+      "name": "Status Card",
+      "kind": "card",
+      "description": "以文本和状态点共同表达数据源状态的紧凑卡片。",
+      "html": "<div class=\"ds-status-card\" data-state=\"ready\"><span>Danbooru</span><strong>Ready</strong></div>",
+      "css": ".ds-status-card{position:relative;display:flex;min-width:240px;align-items:center;justify-content:space-between;padding:11px 13px 11px 30px;border-radius:10px;background:#1e1e1e;box-shadow:inset 0 1px rgb(255 255 255 / 4%),0 6px 18px rgb(0 0 0 / 14%);color:rgb(255 255 255 / 72%);font:400 .76rem/1.4 Inter,ui-sans-serif,system-ui,sans-serif;gap:12px}.ds-status-card::before{position:absolute;top:50%;left:14px;width:7px;height:7px;border-radius:50%;background:#737373;content:'';transform:translateY(-50%)}.ds-status-card[data-state='ready']::before{background:#4ade80;box-shadow:0 0 0 3px rgb(74 222 128 / 10%)}.ds-status-card[data-state='waiting']::before{background:#facc15;box-shadow:0 0 0 3px rgb(250 204 21 / 9%)}.ds-status-card[data-state='error']::before{background:#f87171;box-shadow:0 0 0 3px rgb(248 113 113 / 10%)}.ds-status-card strong{color:rgb(255 255 255 / 88%);font-size:.74rem;font-weight:600}"
+    }
+  ],
+  "narrative": {
+    "northStar": "ComfyUI 原生伴侣",
+    "overview": "界面应像 ComfyUI 自身能力的自然延伸，而不是覆盖在宿主上的独立产品。它保持克制、精密、友好、高效与轻盈：平时退居内容之后，在候选、状态或操作真正需要用户注意时才提高对比度。\n\n“安静的创作助手”约束交互噪声，“精密标签工作台”约束高密度信息组织。补全与共现弹层优先快速扫描和键盘操作；在线设置允许更舒展的分区，但仍通过柔和表面层级而非厚重边框建立结构。",
+    "keyCharacteristics": [
+      "跟随 ComfyUI 主题与宿主 token，而不是建立平行配色系统。",
+      "高密度列表保持固定节奏、清晰列对齐和稳定选择反馈。",
+      "圆角无边框表面以轻微内侧高光和柔和环境阴影表达层级。",
+      "蓝色只承担选择、焦点与主要操作，状态颜色只表达真实状态。",
+      "动效短促且服务于状态变化，不改变组件尺寸或布局。"
+    ],
+    "rules": [
+      { "name": "The Host-First Rule", "body": "补全主界面优先继承 ComfyUI 的背景、正文、说明、边界和 hover token；只有产品特有的分类与状态语义使用局部颜色。", "section": "colors" },
+      { "name": "The One Accent Rule", "body": "工作台蓝只用于选择、焦点、进度和主要操作；同一区域不引入第二套竞争性强调色。", "section": "colors" },
+      { "name": "The Semantic Color Rule", "body": "绿、黄、红必须对应真实状态，不作为普通装饰或分类背景。", "section": "colors" },
+      { "name": "The Scan-First Rule", "body": "列表与设置界面的字号层级必须帮助用户从标题到标签再到元数据快速扫读，不能用大字号牺牲有效信息密度。", "section": "typography" },
+      { "name": "The Mono-With-Purpose Rule", "body": "等宽字体只表达查询、标签和机器可读值，不用于普通说明文案。", "section": "typography" },
+      { "name": "The Content-Preservation Rule", "body": "响应式收缩先压缩 gap、padding 和低优先级辅助信息，不能通过横向溢出、遮挡或缩小主要内容来维持桌面结构。", "section": "layout" },
+      { "name": "The Stable-Dimensions Rule", "body": "hover、focus、loading 和 selected 状态不得改变边框宽度、组件尺寸、列表宽度或列结构。", "section": "layout" },
+      { "name": "The Borderless Layer Rule", "body": "面板、卡片、输入框和按钮默认无高对比度边框；优先用背景明度、间距、内侧高光和柔和阴影建立层级。", "section": "elevation" },
+      { "name": "The Ambient-Only Rule", "body": "阴影用于分离表面和反馈状态，不制造厚重黑边、强光晕或悬浮卡片墙。", "section": "elevation" },
+      { "name": "The Scale-Follows-Radius Rule", "body": "组件越大，圆角可越宽；同一层级的同类控件必须保持一致圆角。", "section": "shapes" }
+    ],
+    "dos": [
+      "Do 让补全弹层继承 ComfyUI 主题 token，并把局部固定色限制在在线设置与明确语义状态。",
+      "Do 使用 4、6、8、12、16、24px 的既有节奏组织紧凑控件、卡片和 Section。",
+      "Do 为 hover、focus、selected、disabled、busy、success 和 error 提供清晰且不抖动的反馈。",
+      "Do 在窄空间优先隐藏低优先级提示，保留标签、翻译、指标和来源等主要内容。",
+      "Do 保持键盘焦点可见，并让状态文字、ARIA 与视觉反馈表达同一事实。"
+    ],
+    "donts": [
+      "Don't 使用厚重边框或高对比度分割线切割面板、卡片、输入框和按钮。",
+      "Don't 用大面积高饱和色铺满普通表面；工作台蓝和状态色必须保持稀缺且有语义。",
+      "Don't 添加无功能目的的装饰、光晕、持续动画或布局位移。",
+      "Don't 为追求留白而降低候选列表的信息密度，或让面板遮挡、溢出和压缩主要内容。",
+      "Don't 在同一功能中建立独立于 ComfyUI 的第二套字体、基础背景或交互语言。"
+    ]
+  }
+}

@@ -7,6 +7,7 @@ import { createFlexSearchDocument, createFlexSearchDocumentForModel } from "./se
 export const TagSource = {
     Danbooru: 'danbooru',
     E621: 'e621',
+    Rule34: 'rule34',
 }
 
 // Tag sources for model based tag data.
@@ -35,6 +36,15 @@ export const TagCategory = {
         'invalid',
         'meta',
         'lore',
+    ],
+    'rule34': [
+        'general',
+        'artist',
+        'invalid',
+        'copyright',
+        'character',
+        'meta',
+        'deprecated',
     ],
     'embeddings': [
         'embeddings'

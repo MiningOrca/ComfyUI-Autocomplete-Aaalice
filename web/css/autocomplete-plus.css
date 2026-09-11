@@ -213,6 +213,32 @@ body.dark-theme {
   color: var(--autocomplete-plus-text-color-cat-purple);
 }
 
+#autocomplete-plus-root .rule34[data-tag-category="general"] {
+  color: var(--autocomplete-plus-text-color-cat-blue);
+}
+
+#autocomplete-plus-root .rule34[data-tag-category="artist"] {
+  color: var(--autocomplete-plus-text-color-cat-red);
+}
+
+#autocomplete-plus-root .rule34[data-tag-category="copyright"] {
+  color: var(--autocomplete-plus-text-color-cat-purple);
+}
+
+#autocomplete-plus-root .rule34[data-tag-category="character"] {
+  color: var(--autocomplete-plus-text-color-cat-green);
+}
+
+#autocomplete-plus-root .rule34[data-tag-category="meta"] {
+  color: var(--autocomplete-plus-text-color-cat-yellow);
+}
+
+#autocomplete-plus-root .rule34[data-tag-category="invalid"],
+#autocomplete-plus-root .rule34[data-tag-category="deprecated"],
+#autocomplete-plus-root .rule34[data-tag-category="unknown"] {
+  color: var(--autocomplete-plus-text-color-cat-gray);
+}
+
 #autocomplete-plus-list {
   display: grid;
   overflow: hidden auto;

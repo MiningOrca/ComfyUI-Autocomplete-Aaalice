@@ -19,6 +19,8 @@ from .translation_store import TranslationStore
 DATA_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data"))
 DANBOORU_PREFIX = "danbooru"
 E621_PREFIX = "e621"
+RULE34_PREFIX = "rule34"
+TAG_SOURCE_PREFIXES = (DANBOORU_PREFIX, E621_PREFIX, RULE34_PREFIX)
 TAGS_SUFFIX = "tags"
 COOCCURRENCE_SUFFIX = "tags_cooccurrence"
 RETIRED_LIVE_TAGS_FILE = "danbooru_tags_live.csv"
@@ -45,7 +47,7 @@ danbooru_related_search = CompletionSearchService(DanbooruRelatedTagProvider(), 
 
 def get_csv_file_status():
     data = {}
-    for prefix in (DANBOORU_PREFIX, E621_PREFIX):
+    for prefix in TAG_SOURCE_PREFIXES:
         base_tags_file = f"{prefix}_{TAGS_SUFFIX}.csv"
         base_cooccurrence_file = f"{prefix}_{COOCCURRENCE_SUFFIX}.csv"
         all_csv_files = [
@@ -90,7 +92,8 @@ async def get_csv_list(_request):
     print(
         f"""[Autocomplete-Plus] CSV file status:
   * Danbooru -> base: {response[DANBOORU_PREFIX]["base_tags"]}, extra: [{", ".join(response[DANBOORU_PREFIX]["extra_tags"])}]
-  * E621     -> base: {response[E621_PREFIX]["base_tags"]}, extra: [{", ".join(response[E621_PREFIX]["extra_tags"])}]"""
+  * E621     -> base: {response[E621_PREFIX]["base_tags"]}, extra: [{", ".join(response[E621_PREFIX]["extra_tags"])}]
+  * Rule34   -> base: {response[RULE34_PREFIX]["base_tags"]}, extra: [{", ".join(response[RULE34_PREFIX]["extra_tags"])}]"""
     )
     return web.json_response(response)
 
@@ -99,7 +102,7 @@ async def get_csv_list(_request):
 async def get_base_tags_file(request):
     source = str(request.match_info["source"])
     suffix = str(request.match_info["suffix"])
-    if source not in {DANBOORU_PREFIX, E621_PREFIX} or suffix not in {TAGS_SUFFIX, COOCCURRENCE_SUFFIX}:
+    if source not in TAG_SOURCE_PREFIXES or suffix not in {TAGS_SUFFIX, COOCCURRENCE_SUFFIX}:
         return web.json_response({"error": "Invalid tag source or suffix"}, status=400)
     file_path = os.path.join(DATA_DIR, f"{source}_{suffix}.csv")
     if not os.path.exists(file_path):
@@ -112,7 +115,7 @@ async def get_extra_tags_file(request):
     try:
         source = str(request.match_info["source"])
         suffix = str(request.match_info["suffix"])
-        if source not in {DANBOORU_PREFIX, E621_PREFIX} or suffix not in {TAGS_SUFFIX, COOCCURRENCE_SUFFIX}:
+        if source not in TAG_SOURCE_PREFIXES or suffix not in {TAGS_SUFFIX, COOCCURRENCE_SUFFIX}:
             return web.json_response({"error": "Invalid tag source or suffix"}, status=400)
         files = get_csv_file_status()[source][f"extra_{suffix}"]
         index = int(request.match_info["index"])

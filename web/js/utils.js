@@ -728,7 +728,7 @@ export function getScrollbarWidth() {
 
 /**
  * Opens a wiki URL in a new browser tab for the given tag.
- * @param {string} tagSource - The source of the tag ('danbooru', 'e621', 'embeddings', 'lora')
+ * @param {string} tagSource - The source of the tag ('danbooru', 'e621', 'rule34', 'embeddings', 'lora')
  * @param {string} tagName - The name of the tag
  * @returns {boolean} - True if URL was opened, false if not applicable
  */
@@ -749,6 +749,11 @@ export function openTagWikiUrl(tagSource, tagName) {
         case 'e621':
             const e621Tag = encodeURIComponent(tagName.replace(/ /g, '_'));
             wikiUrl = `https://e621.net/wiki_pages/${e621Tag}`;
+            break;
+
+        case 'rule34':
+            const rule34Tag = encodeURIComponent(tagName.replace(/ /g, '_'));
+            wikiUrl = `https://rule34.xxx/index.php?page=post&s=list&tags=${rule34Tag}`;
             break;
 
         case 'embeddings':

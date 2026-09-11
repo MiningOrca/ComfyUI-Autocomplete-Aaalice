@@ -708,23 +708,57 @@ export function loadLoras({ force = false, suppressErrors = true } = {}) {
                     .map(value => String(value || '').trim())
                     .filter(Boolean)
             )];
-            const tagData = new TagData(`<lora:${loraName}>`, 0, 0, aliases, source);
-            tagData.filename = String(record.filename || '');
-            tagData.displayName = String(record.display_name || loraName);
-            tagData.baseModel = String(record.base_model || '');
-            tagData.trainedWords = Array.isArray(record.trained_words)
+            const displayName = String(record.display_name || loraName);
+            const baseModel = String(record.base_model || '');
+            const filename = String(record.filename || '');
+
+            // The model reference is one candidate. Selecting it inserts only the
+            // reference; activation tags are separate candidates below.
+            const referenceTag = new TagData(`<lora:${loraName}>`, 0, 0, aliases, source);
+            referenceTag.filename = filename;
+            referenceTag.displayName = displayName;
+            referenceTag.baseModel = baseModel;
+            referenceTag.trainedWords = Array.isArray(record.trained_words)
                 ? record.trained_words.map(value => String(value || '').trim()).filter(Boolean)
                 : [];
-            tagData.triggerPrompt = String(record.trigger_prompt || '');
-            tagData.insertText = String(record.insert_text || '');
+            referenceTag.triggerPrompt = String(record.trigger_prompt || '');
+            referenceTag.insertText = String(record.reference_insert_text || record.insert_text || '');
+            referenceTag.candidateKind = 'reference';
+            referenceTag.loraName = loraName;
+            referenceTag.autocompleteKey = `lora\0reference\0${loraName}`;
 
-            data.sortedTags.push(tagData);
-            data.tagMap.set(loraName, tagData);
+            data.sortedTags.push(referenceTag);
+            data.tagMap.set(referenceTag.tag, referenceTag);
+            data.tagMap.set(loraName, referenceTag);
             updateMaxTagLength(Math.max(
                 loraName.length,
-                tagData.displayName.length,
+                displayName.length,
                 ...aliases.map(alias => alias.length),
             ));
+
+            // Each activation tag is its own autocomplete item. Its visible/search
+            // text is plain (e.g. "incase"), while insertText preserves the LoRA's
+            // exact syntax (e.g. "(incase:0.6)").
+            const activationTags = Array.isArray(record.activation_tags) ? record.activation_tags : [];
+            activationTags.forEach((activation, index) => {
+                const triggerTag = String(activation?.tag || '').trim();
+                const insertText = String(activation?.insert_text || triggerTag).trim();
+                if (!triggerTag || !insertText) return;
+
+                const triggerAliases = [...new Set([displayName, loraName].filter(Boolean))];
+                const triggerData = new TagData(triggerTag, 0, 0, triggerAliases, source);
+                triggerData.filename = filename;
+                triggerData.displayName = displayName;
+                triggerData.baseModel = baseModel;
+                triggerData.insertText = insertText;
+                triggerData.candidateKind = 'trigger';
+                triggerData.loraName = loraName;
+                triggerData.autocompleteKey = `lora\0trigger\0${loraName}\0${triggerTag}\0${index}`;
+
+                data.sortedTags.push(triggerData);
+                if (!data.tagMap.has(triggerTag)) data.tagMap.set(triggerTag, triggerData);
+                updateMaxTagLength(Math.max(triggerTag.length, insertText.length, displayName.length));
+            });
         }
 
         await buildFlexSearchIndex(source);
@@ -732,7 +766,7 @@ export function loadLoras({ force = false, suppressErrors = true } = {}) {
         data.cooccurrenceInitialized = true;
         data.initialized = true;
         dispatchDataEvent(DATA_TAGS_READY_EVENT);
-        console.log(`[Autocomplete-Plus] Loaded ${payload.length} LoRA models`);
+        console.log(`[Autocomplete-Plus] Loaded ${payload.length} LoRA models with ${data.sortedTags.length - payload.length} activation tags`);
     })()
         .catch(error => {
             data.error = error;

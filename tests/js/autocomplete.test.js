@@ -473,6 +473,32 @@ describe('Autocomplete Functions', () => {
             expect(textarea.value).toBe('<lora:my_model:1.0>, ');
         });
 
+        test('should insert only an enriched LoRA reference, not all activation tags', () => {
+            const textarea = createMockTextarea('<lora:inc', 9);
+            const tagData = {
+                tag: '<lora:incase_coth>',
+                source: ModelTagSource.Lora,
+                candidateKind: 'reference',
+                insertText: '<lora:incase_coth:1>',
+            };
+
+            insertTagToTextArea(textarea, tagData);
+            expect(textarea.value).toBe('<lora:incase_coth:1>, ');
+        });
+
+        test('should insert one LoRA activation tag using its exact weighted syntax', () => {
+            const textarea = createMockTextarea('inca', 4);
+            const tagData = {
+                tag: 'incase',
+                source: ModelTagSource.Lora,
+                candidateKind: 'trigger',
+                insertText: '(incase:0.6)',
+            };
+
+            insertTagToTextArea(textarea, tagData);
+            expect(textarea.value).toBe('(incase:0.6), ');
+        });
+
         test('should complete embedding tag without adding weight', () => {
             const textarea = createMockTextarea('embedding:', 10);
             const tagData = { tag: 'embedding:my_embedding', source: 'embeddings' };

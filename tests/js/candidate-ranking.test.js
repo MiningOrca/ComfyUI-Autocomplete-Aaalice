@@ -231,6 +231,44 @@ describe('unified autocomplete candidate ranking', () => {
         expect(ranked.map(item => item.source)).toEqual(['e621', 'danbooru', 'lora']);
     });
 
+    test('keeps LoRA activation tags distinct from ordinary tags with the same text', () => {
+        const loraTrigger = {
+            ...candidate('incase', 'lora', 0),
+            candidateKind: 'trigger',
+            loraName: 'incoth',
+            autocompleteKey: 'lora\u0000trigger\u0000incoth\u0000incase\u00000',
+            insertText: '(incase:0.6)',
+        };
+        const ranked = rankCompletionCandidates([
+            loraTrigger,
+            candidate('incase', 'e621', 120),
+        ], new Set(['incase']), {
+            limit: 10,
+            sourcePriority: ['e621', 'lora'],
+        });
+        expect(ranked).toHaveLength(2);
+        expect(ranked.map(item => item.source)).toEqual(['e621', 'lora']);
+        expect(ranked[1].insertText).toBe('(incase:0.6)');
+    });
+
+    test('keeps identical activation tags from different LoRAs as separate candidates', () => {
+        const first = {
+            ...candidate('style', 'lora', 0),
+            candidateKind: 'trigger', loraName: 'first',
+            autocompleteKey: 'lora\u0000trigger\u0000first\u0000style\u00000',
+        };
+        const second = {
+            ...candidate('style', 'lora', 0),
+            candidateKind: 'trigger', loraName: 'second',
+            autocompleteKey: 'lora\u0000trigger\u0000second\u0000style\u00000',
+        };
+        const ranked = rankCompletionCandidates([first, second], new Set(['style']), {
+            limit: 10,
+            sourcePriority: ['lora'],
+        });
+        expect(ranked).toHaveLength(2);
+    });
+
     test('does not penalize LoRAs for an explicit lora query', () => {
         const ranked = rankCompletionCandidates([
             candidate('<lora:incoth>', 'lora', 0, ['incoth', 'incase']),

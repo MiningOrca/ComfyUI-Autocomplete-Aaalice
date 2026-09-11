@@ -153,10 +153,15 @@ function rankCandidates(candidates, queryVariations, sources, limit = settingVal
     });
 }
 
+function candidateIdentityKey(candidate) {
+    if (!candidate) return '';
+    return String(candidate.autocompleteKey || `${candidate.source}\0${String(candidate.tag || '').toLowerCase()}`);
+}
+
 function preserveSelectedCandidateIndex(candidates, selectedKey, fallbackIndex) {
     if (!selectedKey) return fallbackIndex;
     const preservedIndex = candidates.findIndex(candidate =>
-        `${candidate.source}\0${String(candidate.tag).toLowerCase()}` === selectedKey);
+        candidateIdentityKey(candidate) === selectedKey);
     return preservedIndex >= 0
         ? preservedIndex
         : Math.min(fallbackIndex, candidates.length - 1);
@@ -183,7 +188,7 @@ function getSearchCandidateLimit(resultLimit = settingValues.maxSuggestions) {
 
 function addCandidate(candidate, candidates, addedTags) {
     if (!candidate) return false;
-    const key = `${candidate.source}\0${String(candidate.tag).toLowerCase()}`;
+    const key = candidateIdentityKey(candidate);
     if (addedTags.has(key)) return false;
     addedTags.add(key);
     candidates.push(candidate);
@@ -399,7 +404,7 @@ function insertTagToTextArea(inputElement, tagDataToInsert) {
     if (rawTagInput) {
         normalizedTag = tagDataToInsert.tag;
     } else if (tagDataToInsert.source === ModelTagSource.Lora && tagDataToInsert.insertText) {
-        // Local LoRA metadata can provide the reference plus its activation prompt.
+        // LoRA references and activation tags provide their own exact insertion text.
         normalizedTag = tagDataToInsert.insertText;
     } else if (tagDataToInsert.source === ModelTagSource.Lora) {
         // Legacy/fallback LoRA entry: retain the original weighted reference behavior.
@@ -456,7 +461,7 @@ class AutocompleteUI {
         this.footer = createAutocompleteFooter();
         this.root.appendChild(this.footer.element);
         this.virtualList = new VirtualKeyedList(this.tagsList, {
-            getKey: tagData => `${tagData.source}\0${tagData.tag}`,
+            getKey: tagData => candidateIdentityKey(tagData),
             getSignature: () => '',
             createElement: (tagData, index) => this.#createTagElement(tagData, index, false),
             updateElement: (row, _tagData, index) => {
@@ -587,7 +592,7 @@ class AutocompleteUI {
             if (requestId !== this._requestId || textareaElement !== this.target) return;
             const selectedCandidate = this.candidates[this.selectedIndex];
             const selectedKey = selectedCandidate
-                ? `${selectedCandidate.source}\0${String(selectedCandidate.tag).toLowerCase()}`
+                ? candidateIdentityKey(selectedCandidate)
                 : null;
             const previousCandidateCount = this.candidates.length;
             const wasVisible = this.root.style.display !== 'none';

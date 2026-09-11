@@ -166,11 +166,14 @@ export function getCandidateAliasText(tagData, locale = getCurrentInterfaceLocal
     if (String(tagData?.source || '').toLowerCase() === 'lora') {
         const baseModel = String(tagData?.baseModel || '').trim();
         const displayName = String(tagData?.displayName || '').trim();
-        const triggerPrompt = String(tagData?.triggerPrompt || '').trim();
+        const candidateKind = String(tagData?.candidateKind || '').trim();
+        const insertText = String(tagData?.insertText || '').trim();
         const details = [];
         if (baseModel && baseModel.toLowerCase() !== 'unknown') details.push(`[${baseModel}]`);
         if (displayName && displayName !== tagData?.tag) details.push(displayName);
-        if (triggerPrompt) details.push(triggerPrompt);
+        if (candidateKind === 'trigger' && insertText && insertText !== tagData?.tag) {
+            details.push(`→ ${insertText}`);
+        }
         if (details.length) return details.join(' · ');
     }
 

@@ -142,11 +142,25 @@ export function mergeDuplicateCandidate(primary, duplicate) {
     });
 }
 
+function getCandidateMergeKey(candidate) {
+    const normalizedTag = normalizeComparableText(candidate?.tag);
+    if (!normalizedTag) return '';
+    // LoRA activation tags are intentionally distinct from booru tags and from
+    // identical triggers belonging to another LoRA. They carry different insertion
+    // syntax and model metadata, so merging them would destroy the useful candidate.
+    if (candidate?.source === 'lora') {
+        const identity = String(candidate?.autocompleteKey || '').trim()
+            || [candidate?.candidateKind || 'model', candidate?.loraName || '', normalizedTag].join('\0');
+        return `lora\0${identity}`;
+    }
+    return normalizedTag;
+}
+
 export function mergeDuplicateCandidates(candidates) {
     const merged = [];
     const indexByTag = new Map();
     for (const candidate of candidates) {
-        const key = normalizeComparableText(candidate?.tag);
+        const key = getCandidateMergeKey(candidate);
         if (!key) continue;
         const existingIndex = indexByTag.get(key);
         if (existingIndex === undefined) {

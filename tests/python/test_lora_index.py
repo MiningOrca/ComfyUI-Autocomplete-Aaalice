@@ -38,12 +38,14 @@ class LoraIndexTests(unittest.TestCase):
 
             self.assertEqual(prompt, "incoth, (incase:0.6)")
             self.assertEqual(weight, "0.8")
-            self.assertEqual(
-                public["insert_text"],
-                "<lora:styles/incoth:0.8> incoth, (incase:0.6)",
-            )
+            self.assertEqual(public["insert_text"], "<lora:styles/incoth:0.8>")
+            self.assertEqual(public["reference_insert_text"], "<lora:styles/incoth:0.8>")
+            self.assertEqual(public["activation_tags"], [
+                {"tag": "incoth", "insert_text": "incoth"},
+                {"tag": "incase", "insert_text": "(incase:0.6)"},
+            ])
             self.assertIn("incoth", public["search_terms"])
-            self.assertIn("incase", public["search_terms"])
+            self.assertNotIn("incase", public["search_terms"])
 
     def test_correct_local_reference_round_trips_without_losing_activation_text(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -61,10 +63,11 @@ class LoraIndexTests(unittest.TestCase):
                 "lora_weight": weight,
             })
 
-            self.assertEqual(
-                public["insert_text"],
-                "<lora:incoth:1> incoth, (incase:0.6)",
-            )
+            self.assertEqual(public["insert_text"], "<lora:incoth:1>")
+            self.assertEqual(public["activation_tags"], [
+                {"tag": "incoth", "insert_text": "incoth"},
+                {"tag": "incase", "insert_text": "(incase:0.6)"},
+            ])
 
     def test_reads_loratags_master_database_by_subfolder(self):
         database = {
@@ -107,6 +110,17 @@ class LoraIndexTests(unittest.TestCase):
         self.assertEqual(entry["base_model_fallback"], "sdxl_base_v1-0")
         self.assertTrue(LoraIndex._needs_civitai(entry))
 
+    def test_activation_tags_preserve_each_weighted_fragment_separately(self):
+        index = LoraIndex("unused.json")
+        self.assertEqual(index._activation_tags(
+            "incoth, (incase:0.6), (dramatic lighting:1.2)",
+            ["incoth", "incase"],
+        ), [
+            {"tag": "incoth", "insert_text": "incoth"},
+            {"tag": "incase", "insert_text": "(incase:0.6)"},
+            {"tag": "dramatic lighting", "insert_text": "(dramatic lighting:1.2)"},
+        ])
+
     def test_refresh_uses_local_sidecar_without_civitai_when_metadata_is_complete(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -142,10 +156,11 @@ class LoraIndexTests(unittest.TestCase):
             self.assertEqual(row["base_model"], "Illustrious")
             self.assertEqual(row["display_name"], "InCoth Style")
             self.assertEqual(row["trained_words"], ["incoth", "incase"])
-            self.assertEqual(
-                row["insert_text"],
-                "<lora:styles/incoth:1> incoth, incase",
-            )
+            self.assertEqual(row["insert_text"], "<lora:styles/incoth:1>")
+            self.assertEqual(row["activation_tags"], [
+                {"tag": "incoth", "insert_text": "incoth"},
+                {"tag": "incase", "insert_text": "incase"},
+            ])
 
 
 if __name__ == "__main__":

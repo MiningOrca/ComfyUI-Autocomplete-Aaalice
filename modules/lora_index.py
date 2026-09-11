@@ -275,23 +275,27 @@ class LoraIndex:
         trigger_prompt = self._clean_prompt_edges(str(entry.get("trigger_prompt", "")))
         weight = self._normalize_weight(entry.get("lora_weight"))
         reference = f"<lora:{stem}:{weight}>"
-        insert_text = reference if not trigger_prompt else f"{reference} {trigger_prompt}"
+        trained_words = self._unique_strings(entry.get("trained_words", []))
         search_terms = self._unique_strings([
             str(entry.get("display_name", "")),
             stem,
             Path(stem).name,
-            *entry.get("trained_words", []),
-            *self._search_terms_from_prompt(trigger_prompt),
         ])
+        activation_tags = self._activation_tags(trigger_prompt, trained_words)
         return {
             "name": stem,
             "filename": entry.get("relative_name", ""),
             "display_name": entry.get("display_name") or Path(stem).name,
             "base_model": entry.get("base_model") or entry.get("base_model_fallback") or "Unknown",
-            "trained_words": entry.get("trained_words", []),
+            "trained_words": trained_words,
             "trigger_prompt": trigger_prompt,
             "search_terms": search_terms,
-            "insert_text": insert_text,
+            "reference_insert_text": reference,
+            # Kept for older frontends. It is intentionally reference-only: activation
+            # tags are separate autocomplete candidates and must never be inserted as a
+            # bundle when the LoRA model candidate is selected.
+            "insert_text": reference,
+            "activation_tags": activation_tags,
         }
 
     def _load_cache(self) -> dict[str, Any]:
@@ -509,11 +513,82 @@ class LoraIndex:
         value = re.sub(r"^[\s,;]+|[\s,;]+$", "", value)
         return re.sub(r"\s{2,}", " ", value).strip()
 
-    @staticmethod
-    def _search_terms_from_prompt(prompt: str) -> list[str]:
+    @classmethod
+    def _activation_tags(cls, prompt: str, trained_words: Iterable[Any]) -> list[dict[str, str]]:
+        """Return one autocomplete candidate per LoRA activation tag.
+
+        ``tag`` is the searchable/plain form while ``insert_text`` preserves the
+        exact activation syntax from metadata, including prompt weights such as
+        ``(incase:0.6)``.
+        """
+        result: list[dict[str, str]] = []
+        seen: set[str] = set()
+        for fragment in cls._split_prompt_fragments(prompt):
+            terms = cls._search_terms_from_prompt(fragment)
+            if not terms:
+                continue
+            tag = terms[0]
+            key = tag.casefold()
+            if key in seen:
+                continue
+            seen.add(key)
+            result.append({"tag": tag, "insert_text": fragment})
+        for trained_word in cls._unique_strings(trained_words):
+            key = trained_word.casefold()
+            if key in seen:
+                continue
+            seen.add(key)
+            result.append({"tag": trained_word, "insert_text": trained_word})
+        return result
+
+    @classmethod
+    def _split_prompt_fragments(cls, prompt: str) -> list[str]:
+        """Split a comma-separated prompt without breaking weighted/grouped tags."""
         prompt = ANY_LORA_REFERENCE_RE.sub("", prompt or "")
+        fragments: list[str] = []
+        current: list[str] = []
+        depths = {"(": 0, "[": 0, "{": 0}
+        closing = {")": "(", "]": "[", "}": "{"}
+        quote = ""
+        escaped = False
+        for char in prompt:
+            if escaped:
+                current.append(char)
+                escaped = False
+                continue
+            if char == "\\" and quote:
+                current.append(char)
+                escaped = True
+                continue
+            if char in {'"', "'"}:
+                current.append(char)
+                if quote == char:
+                    quote = ""
+                elif not quote:
+                    quote = char
+                continue
+            if not quote:
+                if char in depths:
+                    depths[char] += 1
+                elif char in closing:
+                    opener = closing[char]
+                    depths[opener] = max(0, depths[opener] - 1)
+                elif char == "," and not any(depths.values()):
+                    fragment = cls._clean_prompt_edges("".join(current))
+                    if fragment:
+                        fragments.append(fragment)
+                    current = []
+                    continue
+            current.append(char)
+        fragment = LoraIndex._clean_prompt_edges("".join(current))
+        if fragment:
+            fragments.append(fragment)
+        return fragments
+
+    @classmethod
+    def _search_terms_from_prompt(cls, prompt: str) -> list[str]:
         terms: list[str] = []
-        for part in prompt.split(","):
+        for part in cls._split_prompt_fragments(prompt):
             value = part.strip()
             if not value:
                 continue
@@ -523,7 +598,7 @@ class LoraIndex:
             value = value.strip("() ")
             if value:
                 terms.append(value)
-        return LoraIndex._unique_strings(terms)
+        return cls._unique_strings(terms)
 
     @staticmethod
     def _unique_strings(values: Iterable[Any]) -> list[str]:

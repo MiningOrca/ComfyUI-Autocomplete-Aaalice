@@ -10,6 +10,7 @@ import {
     TagSource,
     ensureDataSources,
     loadDataAsync,
+    refreshLoras,
 } from "./data.js";
 import { AUTOCOMPLETE_TAG_INSERTED_EVENT, AutocompleteEventHandler } from "./autocomplete.js";
 import { RelatedTagsEventHandler } from "./related-tags.js";
@@ -33,6 +34,9 @@ const relatedTagsEventHandler = new RelatedTagsEventHandler();
 const autoFormatterEventHandler = new AutoFormatterEventHandler();
 const attachedElementNodeInfoMap = new WeakMap(); // Map to track attached elements and their node info
 let translationCatalogPromise = null;
+let extensionReady = false;
+let loraRefreshTimer = null;
+let loraRefreshForce = false;
 
 function loadTranslationCatalogInBackground(locale) {
     if (translationCatalogPromise) return translationCatalogPromise;
@@ -44,6 +48,23 @@ function loadTranslationCatalogInBackground(locale) {
             translationCatalogPromise = null;
         });
     return translationCatalogPromise;
+}
+
+function scheduleLoraIndexRefresh(force = false) {
+    loraRefreshForce = loraRefreshForce || force;
+    if (loraRefreshTimer !== null) clearTimeout(loraRefreshTimer);
+    loraRefreshTimer = setTimeout(() => {
+        const forceRefresh = loraRefreshForce;
+        loraRefreshTimer = null;
+        loraRefreshForce = false;
+        void refreshLoras({ force: forceRefresh })
+            .then(() => {
+                console.info(`[Autocomplete-Plus] LoRA autocomplete index ${forceRefresh ? 'rebuilt' : 'refreshed'}.`);
+            })
+            .catch(error => {
+                console.error('[Autocomplete-Plus] Failed to refresh LoRA autocomplete index:', error);
+            });
+    }, 150);
 }
 
 // --- Functions ---
@@ -257,8 +278,13 @@ function initializeEventHandlers() {
 app.registerExtension({
     id: id,
     name: name,
+    beforeRegisterVueAppNodeDefs() {
+        // Initial registration happens before setup(); later calls include ComfyUI's R/refresh path.
+        if (extensionReady) scheduleLoraIndexRefresh(false);
+    },
     setup() {
         // ComfyUI waits for extension setup, so indexing must stay outside this lifecycle.
+        extensionReady = true;
         ensureDataSources();
         initializeEventHandlers();
 
@@ -308,6 +334,11 @@ app.registerExtension({
                     // console.debug('[Autocomplete-Plus] Format command: Formatting skipped (blocklisted or not applicable)');
                 }
             }
+        },
+        {
+            id: id + ".rebuildLoraIndex",
+            label: `${name}: Rebuild LoRA autocomplete index`,
+            function: () => scheduleLoraIndexRefresh(true)
         }
     ],
 

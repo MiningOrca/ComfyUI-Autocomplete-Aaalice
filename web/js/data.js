@@ -673,44 +673,71 @@ function loadEmbeddings() {
 }
 
 /**
- * Load LoRA data from the API endpoint
+ * Load LoRA data from the API endpoint. The backend enriches each local LoRA
+ * with activation words and base-model metadata when available.
+ * @param {{force?: boolean, suppressErrors?: boolean}} [options]
  * @returns {Promise<void>}
  */
-function loadLoras() {
+export function loadLoras({ force = false, suppressErrors = true } = {}) {
     ensureDataSources();
     const source = ModelTagSource.Lora;
     const data = autoCompleteData[source];
-    if (data.initialized) return;
+    if (data.initialized && !force) return Promise.resolve();
     if (data.loadingPromise) return data.loadingPromise;
 
     data.isInitializing = true;
     data.error = null;
     const loadingPromise = (async () => {
-        const response = await fetch('/autocomplete-plus/loras', { cache: "no-store" });
+        const url = `/autocomplete-plus/loras${force ? '?force=1' : ''}`;
+        const response = await fetch(url, { cache: "no-store" });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const loraNames = await response.json();
+        const payload = await response.json();
+        if (!Array.isArray(payload)) {
+            throw new Error('Invalid LoRA autocomplete response');
+        }
 
-        loraNames.forEach(loraName => {
-            if (!data.tagMap.has(loraName)) {
-                const tagData = new TagData(`<lora:${loraName}>`, 0, 0, [], source);
-                data.sortedTags.push(tagData);
-                data.tagMap.set(loraName, tagData);
-                updateMaxTagLength(loraName.length);
-            }
-        });
+        for (const item of payload) {
+            const record = typeof item === 'string' ? { name: item } : item;
+            const loraName = String(record?.name || '').trim();
+            if (!loraName) continue;
+
+            const aliases = [...new Set(
+                (Array.isArray(record.search_terms) ? record.search_terms : [])
+                    .map(value => String(value || '').trim())
+                    .filter(Boolean)
+            )];
+            const tagData = new TagData(`<lora:${loraName}>`, 0, 0, aliases, source);
+            tagData.filename = String(record.filename || '');
+            tagData.displayName = String(record.display_name || loraName);
+            tagData.baseModel = String(record.base_model || '');
+            tagData.trainedWords = Array.isArray(record.trained_words)
+                ? record.trained_words.map(value => String(value || '').trim()).filter(Boolean)
+                : [];
+            tagData.triggerPrompt = String(record.trigger_prompt || '');
+            tagData.insertText = String(record.insert_text || '');
+
+            data.sortedTags.push(tagData);
+            data.tagMap.set(loraName, tagData);
+            updateMaxTagLength(Math.max(
+                loraName.length,
+                tagData.displayName.length,
+                ...aliases.map(alias => alias.length),
+            ));
+        }
 
         await buildFlexSearchIndex(source);
         data.tagsInitialized = true;
         data.cooccurrenceInitialized = true;
         data.initialized = true;
         dispatchDataEvent(DATA_TAGS_READY_EVENT);
-        console.log(`[Autocomplete-Plus] Loaded ${loraNames.length} LoRA models`);
+        console.log(`[Autocomplete-Plus] Loaded ${payload.length} LoRA models`);
     })()
         .catch(error => {
             data.error = error;
             console.error(`[Autocomplete-Plus] Failed to fetch LoRA data:`, error);
+            if (!suppressErrors) throw error;
         })
         .finally(() => {
             data.isInitializing = false;
@@ -720,6 +747,13 @@ function loadLoras() {
 
     data.loadingPromise = loadingPromise;
     return loadingPromise;
+}
+
+export function refreshLoras({ force = false } = {}) {
+    ensureDataSources();
+    autoCompleteData[ModelTagSource.Lora] = new AutocompleteData();
+    dispatchDataEvent(DATA_STATUS_CHANGED_EVENT);
+    return loadLoras({ force, suppressErrors: false });
 }
 
 function resetDataSources() {

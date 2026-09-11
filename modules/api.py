@@ -11,21 +11,22 @@ from .chinese_dictionary_service import ChineseDictionaryService
 from .completion_cache_store import CompletionCacheStore
 from .completion_service import CompletionSearchService
 from .danbooru_service import DanbooruProvider, DanbooruRelatedTagProvider
+from .lora_index import LoraIndex
 from .translation_config import OnlineServiceConfig
 from .translation_service import TranslationManager
 from .translation_store import TranslationStore
 
-
+USER_DATA_DIR = os.path.join(folder_paths.get_user_directory(), "autocomplete-plus")
 DATA_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data"))
 DANBOORU_PREFIX = "danbooru"
 E621_PREFIX = "e621"
 RULE34_PREFIX = "rule34"
 TAG_SOURCE_PREFIXES = (DANBOORU_PREFIX, E621_PREFIX, RULE34_PREFIX)
+LORA_INDEX_FILE = os.path.join(USER_DATA_DIR, "lora_index.json")
 TAGS_SUFFIX = "tags"
 COOCCURRENCE_SUFFIX = "tags_cooccurrence"
 RETIRED_LIVE_TAGS_FILE = "danbooru_tags_live.csv"
 
-USER_DATA_DIR = os.path.join(folder_paths.get_user_directory(), "autocomplete-plus")
 ONLINE_SERVICE_CONFIG_FILE = os.path.join(USER_DATA_DIR, "config.json")
 TRANSLATION_DATABASE_FILE = os.path.join(USER_DATA_DIR, "translations.sqlite3")
 COMPLETION_CACHE_DATABASE_FILE = os.path.join(USER_DATA_DIR, "completion_cache.sqlite3")
@@ -43,6 +44,7 @@ translation_manager = TranslationManager(
 completion_cache_store = CompletionCacheStore(COMPLETION_CACHE_DATABASE_FILE)
 danbooru_search = CompletionSearchService(DanbooruProvider(), completion_cache_store)
 danbooru_related_search = CompletionSearchService(DanbooruRelatedTagProvider(), completion_cache_store)
+lora_index = LoraIndex(LORA_INDEX_FILE)
 
 
 def get_csv_file_status():
@@ -432,6 +434,10 @@ async def get_embeddings(_request):
 
 
 @server.PromptServer.instance.routes.get("/autocomplete-plus/loras")
-async def get_loras(_request):
-    loras = folder_paths.get_filename_list("loras")
-    return web.json_response([os.path.splitext(name)[0] for name in loras])
+async def get_loras(request):
+    try:
+        force = request.query.get("force") == "1"
+        rows = await asyncio.to_thread(lora_index.refresh, force)
+        return web.json_response(rows)
+    except Exception as error:
+        return web.json_response({"error": str(error)}, status=500)

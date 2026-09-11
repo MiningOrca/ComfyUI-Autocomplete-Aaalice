@@ -398,8 +398,11 @@ function insertTagToTextArea(inputElement, tagDataToInsert) {
     let normalizedTag;
     if (rawTagInput) {
         normalizedTag = tagDataToInsert.tag;
+    } else if (tagDataToInsert.source === ModelTagSource.Lora && tagDataToInsert.insertText) {
+        // Local LoRA metadata can provide the reference plus its activation prompt.
+        normalizedTag = tagDataToInsert.insertText;
     } else if (tagDataToInsert.source === ModelTagSource.Lora) {
-        // If the tag is from a LoRA source, add weight to it
+        // Legacy/fallback LoRA entry: retain the original weighted reference behavior.
         normalizedTag = addWeightToLora(tagDataToInsert.tag);
     } else if (Object.values(ModelTagSource).includes(tagDataToInsert.source)) {
         // If the tag is from other model tag sources (e.g., Embeddings), don't normalize it

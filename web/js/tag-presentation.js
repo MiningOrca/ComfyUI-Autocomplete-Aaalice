@@ -163,6 +163,17 @@ export function hasTranslatableText(tag) {
 }
 
 export function getCandidateAliasText(tagData, locale = getCurrentInterfaceLocale()) {
+    if (String(tagData?.source || '').toLowerCase() === 'lora') {
+        const baseModel = String(tagData?.baseModel || '').trim();
+        const displayName = String(tagData?.displayName || '').trim();
+        const triggerPrompt = String(tagData?.triggerPrompt || '').trim();
+        const details = [];
+        if (baseModel && baseModel.toLowerCase() !== 'unknown') details.push(`[${baseModel}]`);
+        if (displayName && displayName !== tagData?.tag) details.push(displayName);
+        if (triggerPrompt) details.push(triggerPrompt);
+        if (details.length) return details.join(' · ');
+    }
+
     const normalizedLocale = normalizeInterfaceLocale(locale);
     const isArtist = String(tagData?.categoryText || "").toLowerCase() === "artist";
     if (isArtist && normalizedLocale !== "en") {

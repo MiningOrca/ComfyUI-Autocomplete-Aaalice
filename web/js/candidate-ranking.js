@@ -165,6 +165,9 @@ export function rankCompletionCandidates(candidates, queryVariations, options = 
         sourcePriority = [],
     } = options;
     const sourceRanks = new Map(sourcePriority.map((source, index) => [source, index]));
+    const explicitLoraQuery = [...queryVariations].some(value =>
+        String(value || '').trim().toLowerCase().startsWith('<lora')
+    );
 
     const eligibleCandidates = candidates
         .filter(candidate => candidate.origin !== "danbooru_api" || isDanbooruCompletionEnabled())
@@ -174,13 +177,20 @@ export function rankCompletionCandidates(candidates, queryVariations, options = 
         .map((candidate, originalIndex) => ({
             candidate,
             originalIndex,
+            // LoRAs remain searchable during normal prompt completion, but booru
+            // tags stay above them. Conversely, an explicit `<lora...` query is
+            // a clear request for a model reference, so LoRAs move to the top.
+            loraContextRank: explicitLoraQuery
+                ? (candidate?.source === 'lora' ? 0 : 1)
+                : (candidate?.source === 'lora' ? 1 : 0),
             matchTier: getCandidateMatchTier(candidate, queryVariations),
             count: Math.max(0, Number(candidate?.count) || 0),
             sourceRank: sourceRanks.get(candidate.source) ?? sourcePriority.length,
             originRank: ORIGIN_RANK[candidate?.origin] ?? Object.keys(ORIGIN_RANK).length,
         }))
         .sort((a, b) =>
-            b.matchTier - a.matchTier
+            a.loraContextRank - b.loraContextRank
+            || b.matchTier - a.matchTier
             || b.count - a.count
             || a.originRank - b.originRank
             || a.sourceRank - b.sourceRank

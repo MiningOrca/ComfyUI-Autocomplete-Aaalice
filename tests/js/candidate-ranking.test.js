@@ -216,4 +216,30 @@ describe('unified autocomplete candidate ranking', () => {
             '<lora:folder/style_extra>',
         ]);
     });
+
+    test('keeps LoRA matches below ordinary tags during normal prompt completion', () => {
+        const lora = candidate('<lora:incoth>', 'lora', 0, ['incoth', 'incase']);
+        const ranked = rankCompletionCandidates([
+            lora,
+            candidate('incase', 'e621', 120),
+            candidate('incandescent', 'danbooru', 20),
+        ], new Set(['inc']), {
+            limit: 10,
+            sourcePriority: ['e621', 'danbooru', 'lora'],
+        });
+
+        expect(ranked.map(item => item.source)).toEqual(['e621', 'danbooru', 'lora']);
+    });
+
+    test('does not penalize LoRAs for an explicit lora query', () => {
+        const ranked = rankCompletionCandidates([
+            candidate('<lora:incoth>', 'lora', 0, ['incoth', 'incase']),
+            candidate('incase', 'e621', 1_000_000),
+        ], new Set(['<lora:inc']), {
+            limit: 10,
+            sourcePriority: ['e621', 'lora'],
+        });
+
+        expect(ranked[0].source).toBe('lora');
+    });
 });
